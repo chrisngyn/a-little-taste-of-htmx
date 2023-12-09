@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Todo List</title>
+
+    <!-- Minimal clean style from pico css -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+
+    <style>
+        /* Pico css keeps bullets in list, we hide them */
+        li {
+            list-style-type: none !important;
+        }
+
+        /* If a task is done, we display strike it */
+        input:checked + label {
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+<body>
+<!-- pico css needs this class for centering  -->
+<div class="container">
+    <br> <!-- Lazy spacing from top of the screen  -->
+    <h1>Todo <span>({{ .Completed }}/{{ .Total }})</span></h1>
+    <form method="post" action="/add">
+        <label>
+            <input type="text" name="title" placeholder="New task" value="" autocomplete="off">
+        </label>
+        <button type="submit" value="Add" class="button-primary" role="button">Add</button>
+    </form>
+    <form method="post" action="/set-status">
+        <ul>
+            {{ range .Tasks }}
+            <li>
+                <input type="checkbox" id="task{{ .ID }}"
+                       name="task"
+                       value="{{ .ID }}"
+                       {{ if .Completed }}checked{{ end }}
+                >
+                <label for="task{{ .ID }}">{{ .Title }}</label>
+                <a href="/delete/{{ .ID }}">X</a>
+            </li>
+            {{ end }}
+        </ul>
+        {{ if .Tasks }}
+        <button type="submit" class="button-primary">Update</button>
+        {{ end }}
+    </form>
+</div>
+</body>
+</html>
