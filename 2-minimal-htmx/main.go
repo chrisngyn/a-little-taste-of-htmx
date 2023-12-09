@@ -17,7 +17,7 @@ func main() {
 	repo.SetStatus(id, true)
 	repo.Add("Buy bread")
 
-	tmpl := template.Must(template.ParseFiles("1-no-htmx/index.html"))
+	tmpl := template.Must(template.ParseFiles("2-minimal-htmx/index.html"))
 
 	http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
 		tasks := repo.All()
