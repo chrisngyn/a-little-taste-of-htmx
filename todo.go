@@ -39,11 +39,13 @@ func (r *Repository) SetStatus(id int, completed bool) {
 }
 
 func (r *Repository) Delete(id int) {
-	for i, todo := range r.todos {
-		if todo.ID == id {
-			r.todos = append(r.todos[:i], r.todos[i+1:]...)
+	newTodos := make([]Todo, 0, len(r.todos)-1)
+	for _, todo := range r.todos {
+		if todo.ID != id {
+			newTodos = append(newTodos, todo)
 		}
 	}
+	r.todos = newTodos
 }
 
 func (r *Repository) Count() (total int, completed int) {
