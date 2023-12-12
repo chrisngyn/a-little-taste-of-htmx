@@ -22,16 +22,14 @@ func main() {
 
 	http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
 		tasks := repo.All()
-		total, completed := repo.Count()
+		count := repo.Count()
 
 		err := tmpl.Execute(writer, struct {
-			Tasks     []todohtmx.Todo
-			Total     int
-			Completed int
+			Tasks []todohtmx.Todo
+			Count todohtmx.Count
 		}{
-			Tasks:     tasks,
-			Total:     total,
-			Completed: completed,
+			Tasks: tasks,
+			Count: count,
 		})
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusInternalServerError)

@@ -1,13 +1,25 @@
 package todo_htmx
 
+import (
+	"sync"
+)
+
 type Todo struct {
 	ID        int
 	Title     string
 	Completed bool
 }
 
+type Count struct {
+	Total     int
+	Completed int
+}
+
 type Repository struct {
 	todos []Todo
+
+	mu        sync.Mutex
+	idCounter int
 }
 
 func NewRepository() *Repository {
@@ -17,7 +29,7 @@ func NewRepository() *Repository {
 }
 
 func (r *Repository) Add(title string) int {
-	id := len(r.todos) + 1
+	id := r.generateID()
 	r.todos = append(r.todos, Todo{
 		ID:        id,
 		Title:     title,
@@ -48,11 +60,22 @@ func (r *Repository) Delete(id int) {
 	r.todos = newTodos
 }
 
-func (r *Repository) Count() (total int, completed int) {
+func (r *Repository) Count() Count {
+	var completed int
 	for _, todo := range r.todos {
 		if todo.Completed {
 			completed++
 		}
 	}
-	return len(r.todos), completed
+	return Count{
+		Total:     len(r.todos),
+		Completed: completed,
+	}
+}
+
+func (r *Repository) generateID() int {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.idCounter++
+	return r.idCounter
 }
