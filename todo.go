@@ -73,6 +73,15 @@ func (r *Repository) Count() Count {
 	}
 }
 
+func (r *Repository) Get(id int) Todo {
+	for _, todo := range r.todos {
+		if todo.ID == id {
+			return todo
+		}
+	}
+	return Todo{}
+}
+
 func (r *Repository) generateID() int {
 	r.mu.Lock()
 	defer r.mu.Unlock()

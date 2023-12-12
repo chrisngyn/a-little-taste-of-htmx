@@ -1,0 +1,20 @@
+<li>
+    <input type="checkbox" id="task{{ .ID }}"
+           name="task"
+
+           {{ if .Completed }}
+           checked
+           {{ end }}
+
+           hx-trigger="change"
+           hx-put="/tasks/{{ .ID }}"
+           hx-swap="outerHTML"
+           hx-target="closest li"
+    >
+    <label for="task{{ .ID }}">{{ .Title }}</label>
+    <a
+            hx-delete="/tasks/{{ .ID }}"
+            hx-swap="delete"
+            hx-target="closest li"
+    >X</a>
+</li>
