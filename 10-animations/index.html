@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Todo List</title>
+    <!-- Minimal clean style from pico css -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <!-- Drop in the HTMX lib-->
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+    <script>
+        function calculateTaskCount() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"][name="task"]');
+            const checkedCheckboxes = Array.from(checkboxes).filter(el => el.checked);
+            return `(${checkedCheckboxes.length}/${checkboxes.length})`
+        }
+
+        htmx.on('update-counter', () => {
+            document.getElementById('taskCount').innerHTML = calculateTaskCount()
+        })
+    </script>
+    <style>
+        /* Pico css keeps bullets in list, we hide them */
+        li {
+            list-style-type: none !important;
+        }
+
+        /* If a task is done, we display strike it */
+        input:checked + label {
+            text-decoration: line-through;
+        }
+
+        .htmx-swapping {
+            animation: removed-item-animation 2s cubic-bezier(.55, -0.04, .91, .94) forwards;
+            transform-origin: 0% 100%;
+        }
+
+        @keyframes removed-item-animation {
+            0% {
+                opacity: 1;
+                transform: rotateZ(0);
+            }
+
+            20% {
+                opacity: 1;
+                transform: rotateZ(140deg);
+            }
+
+            40% {
+                opacity: 1;
+                transform: rotateZ(60deg);
+            }
+
+            60% {
+                opacity: 1;
+                transform: rotateZ(110deg);
+            }
+
+            70% {
+                opacity: 1;
+                transform: rotateZ(90deg) translateX(0);
+            }
+
+            90% {
+                opacity: 1;
+                transform: rotateZ(90deg) translateX(600px);
+            }
+
+            100% {
+                opacity: 0;
+                transform: rotateZ(90deg) translateX(600px);
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- pico css needs this class for centering  -->
+<div class="container">
+    <br>
+    <!-- Sprinkle hx-boost="true" on all the things we want to be dynamic -->
+    <h1>Todo <span id="taskCount">({{ .Count.Completed }}/{{ .Count.Total }})</span></h1>
+    <form
+            hx-trigger="submit"
+            hx-post="/tasks"
+            hx-target="ul"
+            hx-swap="beforeend"
+
+            hx-on:htmx:after-request="this.reset()"
+    >
+        <label>
+            <input type="text" name="title" placeholder="New task" value="" autocomplete="off">
+        </label>
+        <button type="submit" value="Add" class="button-primary" role="button">Add</button>
+    </form>
+    <ul>
+        {{ range $task := .Tasks }}
+        {{ template "task.html" $task }}
+        {{ end }}
+    </ul>
+</div>
+</body>
+</html>
