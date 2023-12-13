@@ -88,3 +88,10 @@ func (r *Repository) generateID() int {
 	r.idCounter++
 	return r.idCounter
 }
+
+func Seed(repo *Repository) {
+	repo.Add("Buy milk")
+	id := repo.Add("Buy eggs")
+	repo.SetStatus(id, true)
+	repo.Add("Buy bread")
+}
